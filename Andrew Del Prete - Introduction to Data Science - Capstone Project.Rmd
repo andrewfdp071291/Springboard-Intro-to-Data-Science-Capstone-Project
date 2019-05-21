@@ -1,0 +1,68 @@
+---
+output: html_document
+title: "Risk Versus Reward at the Highest Level"
+subtitle: " Analyzing the Benefits of Adopting an Aggressive Fourth Down Strategy in the National Football League"
+author:
+- Andrew Del Prete
+---
+
+# Introduction
+Kevin Kelley, a high school football coach at Pulaski Academy in Arkansas, has adopted the strategy of [never punting and always kicking onside](https://www.citizen-times.com/story/sports/2014/10/13/high-school-coach-never-punts-always-onside-kicks/17213961/) - tactics generally reserved for desperation comeback attempts or to surprise an opponent. Since Coach Kelley took over the Pulaski Academy football program in 2003, the Bruins have won multiple state championships and set numerous records for offensive success. Kevin Kelley's team and tactics have been featured on ESPN several times and he was even invited to be a panelist at the [MIT Sloan Sports Analytics Conference](http://www.sloansportsconference.com/people/kevin-kelley/) this year.
+
+Despite all of the success Kelley and Pulaski have been able to achieve, his radical strategies have yet to be adopted by any college or professional football team as a viable option. The goal of my project is to determine whether or not the tactic of never punting on fourth down employed by Kelley at Pulaski academy would be successful in the National Football League. Furthermore, even if this straregy is flawed at the highest level of organized football, I hope to determine the situations in which NFL teams could find benefit in tasking the risk associated with this tactic.
+
+# Data and Approach
+```{r echo = FALSE}
+# Numbers of downs of each type for past 5 NFL Seasons: Ordered 1st, 2nd, 3rd, 4th, None
+downs2014 <- c(15228,11608,7280,3794,3873) 
+downs2015 <- c(15335,11784,7358,3861,3826)
+downs2016 <- c(14971,11247,7000,3760,3838)
+downs2017 <- c(14352,10794,6884,3883,3676)
+downs2018 <- c(14625,10652,6498,3628,3923)
+NFLdownspast5seasons = matrix(c(downs2014,downs2015,downs2016,downs2017,downs2018),nrow = 5, ncol = 5, byrow = TRUE, dimnames = list(c("2014","2015","2016","2017","2018"),c("First", "Second", "Third", "Fourth", "No Down")))
+
+
+
+```
+
+Since the start of the 2014 season, `r as.integer(sum(NFLdownspast5seasons))` total plays have been run in the National Football League. Of these plays, `r as.integer(sum(NFLdownspast5seasons[,4]))` have been [fourth down plays](https://www.pro-football-reference.com/play-index/play_finder.cgi?request=1&match=summary_all&year_min=2014&year_max=2018&game_type=R&game_num_min=0&game_num_max=99&week_num_min=0&week_num_max=99&quarter%5B%5D=1&quarter%5B%5D=2&quarter%5B%5D=3&quarter%5B%5D=4&quarter%5B%5D=5&minutes_max=15&seconds_max=00&minutes_min=00&seconds_min=00&down%5B%5D=4&field_pos_min_field=team&field_pos_max_field=team&end_field_pos_min_field=team&end_field_pos_max_field=team&type%5B%5D=PASS&type%5B%5D=RUSH&type%5B%5D=PUNT&type%5B%5D=KOFF&type%5B%5D=ONSD&type%5B%5D=FG&type%5B%5D=XP&type%5B%5D=2PCR&type%5B%5D=2PCP&no_play=N&turnover_type%5B%5D=interception&turnover_type%5B%5D=fumble&score_type%5B%5D=touchdown&score_type%5B%5D=field_goal&score_type%5B%5D=safety&rush_direction%5B%5D=LE&rush_direction%5B%5D=LT&rush_direction%5B%5D=LG&rush_direction%5B%5D=M&rush_direction%5B%5D=RG&rush_direction%5B%5D=RT&rush_direction%5B%5D=RE&pass_location%5B%5D=SL&pass_location%5B%5D=SM&pass_location%5B%5D=SR&pass_location%5B%5D=DL&pass_location%5B%5D=DM&pass_location%5B%5D=DR&order_by=yards).
+
+```{r echo = FALSE, fig.width=6, fig.height=5} 
+# Plot of Each Type of Play since 2014 Season
+barplot(NFLdownspast5seasons, main = "NFL Plays Run Since 2014 Season", xlab = "Down", ylab = "Number of Plays", legend.text = TRUE)
+
+# Fourth down attempts since 2014 Season
+run_attempts <- 1590
+pass_attempts <-  850
+```
+
+The first mode of analysis that will be performed on the data set is to determine the success rate of all fourth down plays that were not punts or field goals. Of fourth down plays run since 2014, teams have attempted to go for a first down or touchdown on `r run_attempts + pass_attempts` plays, equivalent to about `r 100*(signif((run_attempts + pass_attempts) / sum(NFLdownspast5seasons[,4]), 3))` percent. While this sample would suffice as a reasonable data set for analysis, the data will have to be further cleaned in an attempt to eliminate bias. Coach Kelley's system does not employ deception, as opponents are well aware that he does not intend to punt away the football. In order to combat this trickery, only passing plays from players with at least ten passing attempts or running plays from players with at least ten carries for the season will be used for the analysis. This information from the 2018 season can be found in the following locations:  
+
++ [2018 NFL Individual Passing Statistics](https://www.pro-football-reference.com/years/2018/passing.htm)
+
++ [2018 NFL Individual Rushing Statistics](https://www.pro-football-reference.com/years/2018/rushing.htm)  
+
+Furthermore, in order to ensure that the fourth down attempt was calculated and not out of desperation, plays that were run with less than two minutes left in the second quarter or less than five minutes left in the fourth quarter will be eliminated from consideration. Overtime plays will also be removed fom the data set. If this leaves too few data points, additional years (ranging back to 1994) can easily be added to bulk up the data.
+
+With the success rate of standard fourth down plays better understood, the next bit of analysis will look into the value of punting and compare this with the expected value of either attempting a field goal or running another play and risking a turnover on downs. Given the field position and the distance to gain, a number of factors will be used to determine potential points gained or lost from each course of action:
+
+1. The likelihood of a made field goal from the given distance. This will be determined by simply looking at the success rate of NFL kickers when attempting a field goal from the given range.  
+
+2. The likelihood of a first down and scoring (either a touchdown or field goal). The potential points will factor in the percentage that a first down is gained as well as the average points scored when starting a drive at the first down field position.
+
+3. The likelihood that the opponent scores if the fourth down attempt is failed. This will look at drive results based on the opponent starting with the ball at the current field position.  
+
+4. The likelihood that the opponent scores if a punt is performed. This will look at drive results based on the average starting field position for an opponent when punting from the given field position.  
+
+While just using [drive starts from the 2014 to 2018 NFL seasons](https://www.pro-football-reference.com/play-index/drive_finder.cgi?request=1&year_min=2014&year_max=2018&game_type=R&game_num_min=0&game_num_max=99&week_num_min=0&week_num_max=99&start_event%5B%5D=Downs&start_event%5B%5D=Interception&start_event%5B%5D=Punt&start_event%5B%5D=Blocked+FG&start_event%5B%5D=Missed+FG&start_event%5B%5D=Fumble&start_event%5B%5D=Muffed+Punt&start_event%5B%5D=Blocked+Punt&start_event%5B%5D=Kickoff&start_event%5B%5D=Onside+Kick&start_event%5B%5D=Own+Kickoff&start_event%5B%5D=Muffed+Kickoff&end_event%5B%5D=Touchdown&end_event%5B%5D=Field+Goal&end_event%5B%5D=Missed+FG&end_event%5B%5D=Fumble&end_event%5B%5D=Interception&end_event%5B%5D=Downs&end_event%5B%5D=Punt&end_event%5B%5D=Blocked+Punt&end_event%5B%5D=Blocked+FG&end_event%5B%5D=Safety&end_event%5B%5D=End+of+Half&end_event%5B%5D=End+of+Game&exclude_kneels=1&drive_st_gtlt=lt&drive_st_own_opp=Own&drive_end_gtlt=lt&drive_end_own_opp=Own&drive_num_gtlt=gt&start_quarter%5B%5D=1&start_quarter%5B%5D=2&start_quarter%5B%5D=3&start_quarter%5B%5D=4&start_quarter%5B%5D=5&end_quarter%5B%5D=1&end_quarter%5B%5D=2&end_quarter%5B%5D=3&end_quarter%5B%5D=4&end_quarter%5B%5D=5&minutes_max=15&seconds_max=00&minutes_min=00&seconds_min=00) is not a perfect analogy for a successful fourth down attempt, it should serve as a decent baseline to show how often teams score when with the football and a fresh set of downs at the listed yardage. 
+
+# Project Deliverables
+Ultimately the end deliverable of this project will be R code that can produce a suggestion whether the potential benefit of attempting a fourth down play outweighs the risk of the attempt failing. In addition to this code, a report and slide deck will be included to help clarify the data used and the thought process behind the analysis performed.
+
+# References  
+1. Jarrett, Keith. “High School Coach Who Never Punts, Always Onside Kicks.” Citizen Times, 13 Oct. 2014,  
+www.citizen-times.com/story/sports/2014/10/13/high-school-coach-never-punts-always-onside-kicks/17213961/.
+2. “Kevin Kelley.” MIT Sloan Sports Analytics Conference, ESPN,    
+www.sloansportsconference.com/people/kevin-kelley/.
+3. Pro Football Reference, Sports Reference LLC,  
+www.pro-football-reference.com/.

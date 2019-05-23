@@ -1,1 +1,1 @@
-This repository contains work related to the capstone project of Andrew Del Prete for the Springboard Introduction to Data Science course.
+This repository contains work by Andrew Del Prete related to the Springboard Introduction to Data Science course.

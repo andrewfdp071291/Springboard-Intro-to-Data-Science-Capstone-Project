@@ -1,0 +1,29 @@
+---
+title: "Load Management and Minute Restrictions"
+subtitle: "Analyzing the Newest Trends for Health Maintenance in the National Basketball Association"
+author: "Andrew Del Prete"
+date: "6/17/2019"
+output: html_document
+---
+
+# Introduction
+Recently, a new controversial term has emerged in the NBA: **Load Management**. This phrase refers to players taking games off to rest their bodies, despite not having any medically diagnosed injury or malady that would prevent or limit them from playing the contest. Typically employed for players returning from injury or veterans, this new tactic has been met with much chagrin from former players. [Kobe Bryant](https://247sports.com/nba/los-angeles-lakers/Article/Kobe-Bryant-load-management-rest-injuries-Lakers-NBA-130329277/), a sure-fire hall-of-famer when he's eligible in 2021, has been very outspoken on his distaste for this new maneuver, claiming that he would only take a game off if he "couldn't walk." Fans have also expressed a dislike for load management, as the possibility exists that a popular visiting player will sit out instead of playing in the one game per season where that player has a game there.
+
+With the same intention of injury prevention and keeping players fresh, another popular trend among NBA teams in the modern game is to restrict the number of minutes for top players. One former head coach, [Tom Thibodeau](https://www.nba.com/article/2018/01/05/minnesota-timberwovles-tom-thibodeau-not-fretting-over-starters-minutes-load), was heavily criticized for the excessive amount of playing time he gave to starters. Currently, only two of the top 30 career leaders in minutes per game are active players, as teams move away from relying excessively on one or two players to play most of the game in the interest of player health.
+
+# Data and Approach
+The data for this analysis is readily available at two main sources:
+
+* [NBA Injuries from 2010 - 2018 on Kaggle](https://www.kaggle.com/ghopkins/nba-injuries-2010-2018#injuries.csv)
+    + Includes the date, team, player, and detail of injury.
+    + Players who miss a game for no reason (Load Management), are listed as `rest (DNP)` in the `Notes` column. 
+    + Available in CSV format (9784 total entries).
+
+* [NBA Season Statistics from 2010-2018 provided by Sports Reference LLC](https://www.basketball-reference.com/leagues/NBA_2019_per_game.html)
+    + Reference includes regular season and post-season statistics from every year since the NBA's inception.
+    + Available in CSV format (season-by-season).
+    
+These data sets will be used to examine the performance of players from 2010-2018 during the post-season relative to the regular season. While a dip in performance is expected for most players due to the heightened stakes of each game, the goal of this project is to determine whethe players who were given rest (either by sitting games out or by playing less minutes), performed better than their similary-aged counterparts who were not given days off and played longer minutes. Furthermore, an examination of whether injuries are significantly more prevelant in players with more minutes will be performed.
+    
+# Project Deliverables
+The project will be based around R code that attempts to reveal the benefits of Load Management and Minute Restrictions in the NBA. Accompanying this code, a report and slide deck will be included to help clarify the data used and the thought process behind the analysis performed.
